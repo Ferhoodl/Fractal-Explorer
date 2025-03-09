@@ -1,38 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#define WIDTH 100 
-#define HEIGHT 100 
-#define MAXITERS 200;
-#define BLACK "256 255 255"
-#define WHITE "0 0 0"
+#define WIDTH 1000
+#define HEIGHT 1000
+#define MAXITERS 100
+
+const char WHITE[] = "255 255 255";
+const char BLACK[] = "0 0 0";
+
 typedef struct {
 	double real;
 	double imag;
 } point;
 
-char[] fileName = "image.ppm";
+point iterate(point pt, point c);
+
+char fileName[] = "image.ppm";
 int main(){
 	FILE *fp = fopen(fileName, "wb");
 
-	fprintf(fp, "P6\n%d %d\n255\n", WIDTH, HEIGHT);
-	int iters = 0;
-	int val = 0;
-	for(int i = 0; i < WIDTH; i++){
-		for(int j = 0; j < HEIGHT; j++){
-			while (iters < MAXITERS){
-				iters++;
-
-			}
+	fprintf(fp, "P3\n%d %d\n255\n", WIDTH, HEIGHT);
+	int iters;
+	point initPoint = {0.0, 0.0};
+	for(int i = -WIDTH/2; i < WIDTH/2; i++){
+		for(int j = -HEIGHT/2; j < HEIGHT/2; j++){
 			iters = 0;
-			val = 0;
+			point thisPixel = {(double)i/(WIDTH/4), (double)j/(HEIGHT/4)};
+			point currPoint = initPoint;
+			while (iters < MAXITERS && (sqrt(currPoint.real*currPoint.real + currPoint.imag*currPoint.imag) < 2)){
+				currPoint = iterate(currPoint, thisPixel);
+				iters++;
+			}
+			if(sqrt(pow(currPoint.real, 2) + pow(currPoint.imag, 2)) > 2){
+				fprintf(fp, "%s\n", WHITE);
+			}else{
+				fprintf(fp, "%s\n", BLACK);
+			}
 		}
 	}
 }
 
-iterate(point *pt, point c){
-	int r = pt->real;
-	int i = pt->imag;
-	pt->real = r*r - i*i + c.real;
-	pt->imag = i*r + i*r + c.imag;
+point iterate(point pt, point c){
+	point currPoint;
+	double r = pt.real;
+	double i = pt.imag;
+	currPoint.real = r*r - i*i + c.real;
+	currPoint.imag = i*r + i*r + c.imag;
+	return currPoint;
 }
