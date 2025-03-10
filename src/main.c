@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define WIDTH 1000
-#define HEIGHT 1000
+#define WIDTH 10000
+#define HEIGHT 10000
 #define MAXITERS 100
 
 const char WHITE[] = "255 255 255";
@@ -14,28 +14,32 @@ typedef struct {
 	double imag;
 } point;
 
+point initPoint = {0.0, 0.0};
+
 point iterate(point pt, point c);
 
 char fileName[] = "image.ppm";
 int main(){
 	FILE *fp = fopen(fileName, "wb");
-
 	fprintf(fp, "P3\n%d %d\n255\n", WIDTH, HEIGHT);
 	int iters;
-	point initPoint = {0.0, 0.0};
-	for(int i = -WIDTH/2; i < WIDTH/2; i++){
-		for(int j = -HEIGHT/2; j < HEIGHT/2; j++){
+	for(double i = 0; i < HEIGHT; i++){
+		for(double j = 0; j < WIDTH; j++){
 			iters = 0;
-			point thisPixel = {(double)i/(WIDTH/4), (double)j/(HEIGHT/4)};
+			point thisPixel = {
+			-2.0 + j / WIDTH * 3.0,
+			-1.5 + i / HEIGHT * 3.0};
 			point currPoint = initPoint;
-			while (iters < MAXITERS && (sqrt(currPoint.real*currPoint.real + currPoint.imag*currPoint.imag) < 2)){
+
+			while (iters < MAXITERS && (currPoint.real*currPoint.real + currPoint.imag*currPoint.imag) < 4){
 				currPoint = iterate(currPoint, thisPixel);
 				iters++;
 			}
-			if(sqrt(pow(currPoint.real, 2) + pow(currPoint.imag, 2)) > 2){
-				fprintf(fp, "%s\n", WHITE);
-			}else{
+
+			if(iters == MAXITERS) {
 				fprintf(fp, "%s\n", BLACK);
+			}else{
+				fprintf(fp, "%s\n", WHITE);
 			}
 		}
 	}
