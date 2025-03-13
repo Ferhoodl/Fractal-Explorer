@@ -4,7 +4,7 @@
 
 #define WIDTH 10000
 #define HEIGHT 10000
-#define MAXITERS 100
+#define MAXITERS 200
 
 const char WHITE[] = "255 255 255";
 const char BLACK[] = "0 0 0";
